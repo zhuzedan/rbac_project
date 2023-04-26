@@ -40,6 +40,7 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private RedisCache redisCache;
+
     @Override
     public ResponseResult wxLogin(String code) {
         //拼接url，微信登录凭证校验接口 发起http调用
@@ -49,7 +50,7 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
         log.info("uri:{}\nwechat return {}", uri, json);
         //失败{"errcode":40029,"errmsg":"invalid code, rid: 642452e9-4c04dd06-08584dc4"}
         //成功{"session_key":"iTnI15CLymAVnTBcDo3f0w==","openid":"olHiI4quDueG0ycjhIRLcVmoXHfg"}
-        String token ;
+        String token;
         if (json.get("errcode") == null) {
             //唯一标识
             String openid = json.getString("openid");
@@ -61,7 +62,7 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
                 SystemUser systemUser = new SystemUser();
                 systemUser.setIfWxUser(1);
                 systemUser.setUsername(UUID.randomUUID().toString());
-                systemUser.setNickname("起个名字"+ RandomStringUtils.randomAlphabetic(5));
+                systemUser.setNickname("起个名字" + RandomStringUtils.randomAlphabetic(5));
                 systemUserService.save(systemUser);
 
                 WechatUser wxUser = new WechatUser();
@@ -77,20 +78,19 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
                 wechatUser.setSessionKey(json.getString("session_key"));
                 Long userId = wechatUser.getUserId();
                 LambdaQueryWrapper<SystemUser> wrapper = new LambdaQueryWrapper<>();
-                wrapper.eq(SystemUser::getId,userId);
+                wrapper.eq(SystemUser::getId, userId);
                 SystemUser systemUser = systemUserService.getOne(wrapper);
-                SecuritySystemUser securitySystemUser= new SecuritySystemUser(systemUser);
+                SecuritySystemUser securitySystemUser = new SecuritySystemUser(systemUser);
                 token = jwtTokenUtil.generateToken(securitySystemUser);
             }
-            Map<String,Object> map = new HashMap();
-            map.put("token",token);
+            Map<String, Object> map = new HashMap();
+            map.put("token", token);
             map.put("tokenHead", SecurityConstants.TOKEN_PREFIX);
-            map.put("expireTime",jwtTokenUtil.getExpiredDateFromToken(token).getTime());
+            map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());
             //token值存入redis
-            redisCache.setCacheObject("token_",token);
-            return ResponseResult.success("登录成功",map);
-        }
-        else {
+            redisCache.setCacheObject("token_", token);
+            return ResponseResult.success("登录成功", map);
+        } else {
             return ResponseResult.error("微信登录凭证校验接口调用失败");
         }
     }

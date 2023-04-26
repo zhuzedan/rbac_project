@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * 用户表(SystemUser)表服务实现类
@@ -92,13 +91,13 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             userDetails = loadUserByUsername(username);
             systemUser = ((SecuritySystemUser) userDetails).getSystemUser();
         } catch (Exception e) {
-            throw new ResponseException(ResultCodeEnum.LOGIN_ERROR.getCode(), ResultCodeEnum.LOGIN_ERROR.getMessage());
+            throw new ResponseException(ResultCodeEnum.LOGIN_ERROR);
         }
         if (!passwordEncoder.matches(password, systemUser.getPassword())) {
-            throw new ResponseException(ResultCodeEnum.PASSWORD_ERROR.getCode(), ResultCodeEnum.PASSWORD_ERROR.getMessage());
+            throw new ResponseException(ResultCodeEnum.PASSWORD_ERROR);
         }
         if (!userDetails.isEnabled()) {
-            throw new ResponseException(ResultCodeEnum.ACCOUNT_STOP.getCode(), ResultCodeEnum.ACCOUNT_STOP.getMessage());
+            throw new ResponseException(ResultCodeEnum.ACCOUNT_STOP);
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -107,7 +106,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public ResponseResult loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
+    public ResponseResult<Map<String, Object>> loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
         SystemUser login = doCaptchaLogin(loginCaptchaDto, request);
         SecuritySystemUser user = new SecuritySystemUser(login);
         String token = jwtTokenUtil.generateToken(user);
@@ -117,7 +116,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());
         //token值存入redis
         redisCache.setCacheObject("token_", token);
-        return ResponseResult.success("登录成功", map);
+        return ResponseResult.success(map);
     }
 
     public SystemUser doCaptchaLogin(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
@@ -125,7 +124,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         UserDetails userDetails;
         String captcha = (String) request.getSession().getAttribute("captcha");
         if (null == captcha || !captcha.equals(loginCaptchaDto.getCaptcha())) {
-            throw new ResponseException(ResultCodeEnum.REPEAT_SUBMIT.getCode(), "验证码不正确");
+            throw new ResponseException("验证码不正确");
         }
         try {
             userDetails = loadUserByUsername(loginCaptchaDto.getUsername());
@@ -134,10 +133,10 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             throw new ResponseException(ResultCodeEnum.LOGIN_ERROR.getCode(), ResultCodeEnum.LOGIN_ERROR.getMessage());
         }
         if (!passwordEncoder.matches(loginCaptchaDto.getPassword(), systemUser.getPassword())) {
-            throw new ResponseException(ResultCodeEnum.PASSWORD_ERROR.getCode(), ResultCodeEnum.PASSWORD_ERROR.getMessage());
+            throw new ResponseException("密码错误");
         }
         if (!userDetails.isEnabled()) {
-            throw new ResponseException(ResultCodeEnum.ACCOUNT_STOP.getCode(), ResultCodeEnum.ACCOUNT_STOP.getMessage());
+            throw new ResponseException("账号已停用");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -213,7 +212,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     public SecuritySystemUser getCurrentSecuritySystemUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new ResponseException(500, "用户信息查询失败");
+            throw new ResponseException("用户信息查询失败");
         }
         return (SecuritySystemUser) authentication.getPrincipal();
     }
@@ -226,7 +225,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     public SystemUser getCurrentSystemUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new ResponseException(500, "用户信息查询失败");
+            throw new ResponseException("用户信息查询失败");
         }
         SecuritySystemUser systemUser = (SecuritySystemUser) authentication.getPrincipal();
         return systemUser.getSystemUser();
@@ -239,19 +238,17 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //获取菜单列表
         List<SystemMenu> menuList = systemMenuMapper.getSystemUserMenuList(systemUser.getId());
         //获取权限集合
-        List<String> perms = menuList.stream()
+        String[] authoritiesArray = menuList.stream()
                 .filter(Objects::nonNull)
                 .map(SystemMenu::getPerms)
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toList());
-        String[] authoritiesArray = perms.toArray(new String[perms.size()]);
+                .filter(StringUtils::isNotBlank).toArray(String[]::new);
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(authoritiesArray);
         return new SecuritySystemUser(systemUser, menuList, authorities);
 
     }
 
     @Override
-    public ResponseResult refreshToken(HttpServletRequest request) {
+    public ResponseResult<TokenVo> refreshToken(HttpServletRequest request) {
         String token = null;
         String bearerToken = request.getHeader(SecurityConstants.HEADER_STRING);
         if (StringUtils.contains(bearerToken, SecurityConstants.TOKEN_PREFIX) && bearerToken.startsWith(SecurityConstants.TOKEN_PREFIX)) {
