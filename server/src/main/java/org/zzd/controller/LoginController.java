@@ -80,10 +80,4 @@ public class LoginController {
         return ResponseResult.success();
     }
 
-    @ApiOperation("刷新token")
-    @PostMapping("/refreshToken")
-    public ResponseResult refreshToken(HttpServletRequest request) {
-        return systemUserService.refreshToken(request);
-    }
-
 }

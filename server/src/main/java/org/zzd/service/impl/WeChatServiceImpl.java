@@ -87,8 +87,6 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
             map.put("token", token);
             map.put("tokenHead", SecurityConstants.TOKEN_PREFIX);
             map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());
-            //token值存入redis
-            redisCache.setCacheObject("token_", token);
             return ResponseResult.success("登录成功", map);
         } else {
             return ResponseResult.error("微信登录凭证校验接口调用失败");

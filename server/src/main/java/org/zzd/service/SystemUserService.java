@@ -30,8 +30,6 @@ public interface SystemUserService extends IService<SystemUser> {
 
     UserDetails loadUserByUsername(String username);
 
-    ResponseResult refreshToken(HttpServletRequest request);
-
     ResponseResult insertSystemUser(CreateUserDto createUserDto);
 }
 

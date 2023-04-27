@@ -77,9 +77,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         map.put("token", token);
         map.put("tokenHead", SecurityConstants.TOKEN_PREFIX);
         map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());
-        //token值存入redis
-        redisCache.setCacheObject("token_", token);
-        logger.info("登录成功，并将登录状态存入redis");
         return ResponseResult.success("登录成功", map);
     }
 
@@ -114,8 +111,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         map.put("token", token);
         map.put("tokenHead", SecurityConstants.TOKEN_PREFIX);
         map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());
-        //token值存入redis
-        redisCache.setCacheObject("token_", token);
         return ResponseResult.success(map);
     }
 
@@ -245,23 +240,5 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(authoritiesArray);
         return new SecuritySystemUser(systemUser, menuList, authorities);
 
-    }
-
-    @Override
-    public ResponseResult<TokenVo> refreshToken(HttpServletRequest request) {
-        String token = null;
-        String bearerToken = request.getHeader(SecurityConstants.HEADER_STRING);
-        if (StringUtils.contains(bearerToken, SecurityConstants.TOKEN_PREFIX) && bearerToken.startsWith(SecurityConstants.TOKEN_PREFIX)) {
-            token = bearerToken.replace(SecurityConstants.TOKEN_PREFIX + " ", "");
-        }
-        SecuritySystemUser systemSecurityUser = getCurrentSecuritySystemUser();
-        String reToken = "";
-        if (jwtTokenUtil.validateToken(token, systemSecurityUser)) {
-            reToken = jwtTokenUtil.refreshToken(token);
-        }
-        Long expireTime = jwtTokenUtil.getExpiredDateFromToken(reToken).getTime();
-        TokenVo tokenVo = new TokenVo(expireTime, reToken);
-        redisCache.setCacheObject("token_", reToken);
-        return ResponseResult.success(tokenVo);
     }
 }
