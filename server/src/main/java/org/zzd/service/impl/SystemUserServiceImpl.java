@@ -130,7 +130,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             userDetails = loadUserByUsername(loginCaptchaDto.getUsername());
             systemUser = ((SecuritySystemUser) userDetails).getSystemUser();
         } catch (Exception e) {
-            throw new ResponseException(ResultCodeEnum.LOGIN_ERROR.getCode(), ResultCodeEnum.LOGIN_ERROR.getMessage());
+            throw new ResponseException(ResultCodeEnum.LOGIN_ERROR);
         }
         if (!passwordEncoder.matches(loginCaptchaDto.getPassword(), systemUser.getPassword())) {
             throw new ResponseException("密码错误");
@@ -192,7 +192,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         }
         Long count = systemUserMapper.selectCount(new QueryWrapper<SystemUser>().eq("username", createUserDto.getUsername()));
         if (count > 0) {
-            throw new ResponseException(500, "用户已存在");
+            throw new ResponseException("用户已存在");
         }
         SystemUser systemUser = SystemUser.insertUserConvert(createUserDto);
         if (!StringUtils.isBlank(systemUser.getPassword())) {

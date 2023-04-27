@@ -14,5 +14,7 @@ public interface SystemMenuService extends IService<SystemMenu> {
 
     ResponseResult findNodes();
 
+    ResponseResult queryAsideMenu();
+
 }
 

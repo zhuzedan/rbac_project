@@ -28,5 +28,11 @@ public class SystemMenuController {
     public ResponseResult findNodes() {
         return systemMenuService.findNodes();
     }
+
+    @ApiOperation(value = "获取左侧栏的菜单")
+    @GetMapping("/queryAsideMenus")
+    public ResponseResult queryAsideMenu() {
+        return systemMenuService.queryAsideMenu();
+    }
 }
 
