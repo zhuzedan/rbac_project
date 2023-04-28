@@ -118,6 +118,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser;
         UserDetails userDetails;
         String captcha = (String) request.getSession().getAttribute("captcha");
+        logger.info("调用验证码接口后存在session中的："+captcha);
+        logger.info("前端实际输入的："+loginCaptchaDto.getCaptcha());
         if (null == captcha || !captcha.equals(loginCaptchaDto.getCaptcha())) {
             throw new ResponseException("验证码不正确");
         }

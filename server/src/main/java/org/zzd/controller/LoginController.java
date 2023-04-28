@@ -3,6 +3,8 @@ package org.zzd.controller;
 import com.wf.captcha.base.Captcha;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.zzd.annotation.Log;
@@ -34,6 +36,8 @@ public class LoginController {
     @Resource
     private LoginProperties loginProperties;
 
+    private final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
     // 登录
     @LoginLog
     @ApiOperation("用户登录")
@@ -58,7 +62,7 @@ public class LoginController {
         if (captcha.getCharType() - 1 == LoginCodeEnum.ARITHMETIC.ordinal() && captchaValue.contains(".")) {
             captchaValue = captchaValue.split("\\.")[0];
         }
-        System.out.println("验证码text为"+captchaValue);
+        logger.info("图片验证码结果是"+captchaValue);
         // 保存到session
         request.getSession().setAttribute("captcha", captchaValue);
         // 验证码信息
