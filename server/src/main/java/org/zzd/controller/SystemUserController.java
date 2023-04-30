@@ -1,14 +1,13 @@
 package org.zzd.controller;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.zzd.annotation.Log;
 import org.zzd.dto.user.CreateUserDto;
+import org.zzd.dto.user.UserInfoPageParam;
 import org.zzd.entity.SystemUser;
 import org.zzd.enums.BusinessType;
 import org.zzd.enums.OperatorType;
@@ -17,9 +16,7 @@ import org.zzd.result.ResponseResult;
 import org.zzd.result.ResultCodeEnum;
 import org.zzd.service.SystemUserService;
 import org.zzd.utils.PageHelper;
-import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,17 +35,11 @@ public class SystemUserController {
     private SystemUserService systemUserService;
 
     @Log(title = "分页查询用户", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
-    @ApiOperation(value = "分页查询")
-    @PostMapping("/queryPage")
+    @ApiOperation(value = "分页查询用户")
+    @PostMapping("/querySystemUserPage")
     @PreAuthorize("hasAuthority('bnt.sysUser.list')")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "pageNum", value = "当前页", paramType = "query", dataType = "integer",defaultValue = "1"),
-            @ApiImplicitParam(name = "pageSize", value = "页面大小", paramType = "query", dataType = "integer",defaultValue = "10"),
-            @ApiImplicitParam(name = "startDate", value = "起始日期", paramType = "query", dataType = "date"),
-            @ApiImplicitParam(name = "endDate", value = "结束日期", paramType = "query", dataType = "date")
-    })
-    public ResponseResult<PageHelper<SystemUser>> queryPage(@ApiIgnore @RequestParam HashMap params) {
-        return systemUserService.queryPage(params);
+    public ResponseResult<PageHelper<SystemUser>> queryPage(@RequestBody UserInfoPageParam userInfoPageParam) {
+        return systemUserService.queryPage(userInfoPageParam);
     }
 
     @Log(title = "用户详情", businessType = BusinessType.READ, operatorType = OperatorType.MANAGE)

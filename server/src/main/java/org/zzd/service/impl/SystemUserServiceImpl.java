@@ -18,12 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.zzd.constant.PageConstant;
 import org.zzd.constant.SecurityConstants;
-import org.zzd.dto.user.CreateUserDto;
-import org.zzd.dto.user.LoginCaptchaDto;
-import org.zzd.dto.user.LoginDto;
-import org.zzd.dto.user.UserInfoDto;
+import org.zzd.dto.user.*;
 import org.zzd.entity.SystemMenu;
 import org.zzd.entity.SystemUser;
 import org.zzd.exception.ResponseException;
@@ -36,7 +32,6 @@ import org.zzd.service.SystemUserService;
 import org.zzd.utils.JwtTokenUtil;
 import org.zzd.utils.PageHelper;
 import org.zzd.utils.RedisCache;
-import org.zzd.vo.TokenVo;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -46,8 +41,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 用户表(SystemUser)表服务实现类
- *
+ * @apiNote 用户表(SystemUser)表服务实现类
  * @author zzd
  * @since 2023-03-02 13:53:39
  */
@@ -118,8 +112,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser;
         UserDetails userDetails;
         String captcha = (String) request.getSession().getAttribute("captcha");
-        logger.info("调用验证码接口后存在session中的："+captcha);
-        logger.info("前端实际输入的："+loginCaptchaDto.getCaptcha());
+        logger.info("调用验证码接口后存在session中的：" + captcha);
+        logger.info("前端实际输入的：" + loginCaptchaDto.getCaptcha());
         if (null == captcha || !captcha.equals(loginCaptchaDto.getCaptcha())) {
             throw new ResponseException("验证码不正确");
         }
@@ -142,9 +136,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     /**
-     * @return org.zzd.result.ResponseResult
      * @apiNote 获取用户信息
-     * @date 2023/3/12 21:21
+     * @return org.zzd.result.ResponseResult
      */
     @Override
     public ResponseResult getInfo() {
@@ -158,19 +151,15 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public ResponseResult<PageHelper<SystemUser>> queryPage(HashMap params) {
-        int pageNum = Integer.parseInt((String) params.get(PageConstant.PAGE_NUM));
-        int pageSize = Integer.parseInt((String) params.get(PageConstant.PAGE_SIZE));
+    public ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam params) {
+        int pageNum = params.getPageNum();
+        int pageSize = params.getPageSize();
         Page<SystemUser> page = new Page(pageNum, pageSize);
 
         LambdaQueryWrapper<SystemUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        // 起始日期
-        if (!StringUtils.isBlank((CharSequence) params.get("startDate"))) {
-            lambdaQueryWrapper.ge(SystemUser::getCreateTime, params.get("startDate"));
-        }
-        // 结束日期
-        if (!StringUtils.isBlank((CharSequence) params.get("endDate"))) {
-            lambdaQueryWrapper.le(SystemUser::getCreateTime, params.get("endDate"));
+        // 用户名
+        if (!StringUtils.isBlank(params.getUsername())) {
+            lambdaQueryWrapper.like(SystemUser::getUsername, params.getUsername());
         }
 
         IPage<SystemUser> iPage = this.page(page, lambdaQueryWrapper);
@@ -178,9 +167,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     /**
+     * @apiNote 新建用户
      * @param createUserDto: 新建用户的对象
      * @return org.zzd.result.ResponseResult
-     * @apiNote 新建用户
      */
     @Override
     public ResponseResult insertSystemUser(CreateUserDto createUserDto) {
@@ -217,15 +206,17 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     /**
      * @return org.zzd.entity.SystemUser
      * @apiNote 获得当前用户
-     * @date 2023/3/12 19:03
      */
     public SystemUser getCurrentSystemUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new ResponseException("用户信息查询失败");
         }
-        SecuritySystemUser systemUser = (SecuritySystemUser) authentication.getPrincipal();
-        return systemUser.getSystemUser();
+        if (authentication.getPrincipal() instanceof UserDetails) {
+            SecuritySystemUser systemUser = (SecuritySystemUser) authentication.getPrincipal();
+            return systemUser.getSystemUser();
+        }
+        throw new ResponseException("找不到当前登录的信息");
     }
 
     @Override

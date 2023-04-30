@@ -5,12 +5,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.zzd.dto.user.CreateUserDto;
 import org.zzd.dto.user.LoginCaptchaDto;
 import org.zzd.dto.user.LoginDto;
+import org.zzd.dto.user.UserInfoPageParam;
 import org.zzd.entity.SystemUser;
 import org.zzd.result.ResponseResult;
 import org.zzd.utils.PageHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 
 /**
  * 用户表(SystemUser)表服务接口
@@ -26,7 +26,7 @@ public interface SystemUserService extends IService<SystemUser> {
     ResponseResult getInfo();
 
     // 分页查询
-    ResponseResult<PageHelper<SystemUser>> queryPage(HashMap params);
+    ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam params);
 
     UserDetails loadUserByUsername(String username);
 

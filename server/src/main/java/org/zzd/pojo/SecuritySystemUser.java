@@ -31,6 +31,7 @@ public class SecuritySystemUser implements UserDetails {
     //用户权限列表
 
     List<GrantedAuthority> authorities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -63,7 +64,7 @@ public class SecuritySystemUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return systemUser.getStatus()==1;
+        return systemUser.getStatus() == 1;
     }
 
     public SecuritySystemUser(SystemUser systemUser) {
