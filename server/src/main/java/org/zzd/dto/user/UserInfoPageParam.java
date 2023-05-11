@@ -15,6 +15,6 @@ import org.zzd.param.BasePageParam;
 @Data
 @ApiModel("用户分页对象")
 public class UserInfoPageParam extends BasePageParam {
-    @ApiModelProperty(value = "用户名", required = true)
+    @ApiModelProperty(value = "用户名")
     private String username;
 }

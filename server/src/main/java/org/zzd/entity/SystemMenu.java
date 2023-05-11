@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,49 +13,60 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 /**
- * 菜单表(SystemMenu)表实体类
- *
- * @author zzd
- * @since 2023-03-13 14:24:23
+ * @author :zzd
+ * @apiNote :菜单表(SystemMenu)实体类
+ * @date :2023-05-05 08:48:03
  */
-@SuppressWarnings("serial")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_system_menu")
 public class SystemMenu implements Serializable {
-    //编号
     @TableId
+    @ApiModelProperty(value = "编号")
     private Long id;
 
-    //所属上级
-    private Long parentId;
-    //菜单名称
+    @ApiModelProperty(value = "菜单名称")
     private String name;
-    //类型(0:目录,1:菜单,2:按钮)
-    private Integer type;
-    //路由地址
-    private String path;
-    //组件路径
-    private String component;
-    //权限标识
+
+    @ApiModelProperty(value = "所属上级")
+    private Long parentId;
+
+    @ApiModelProperty(value = "权限标识")
     private String perms;
-    //图标
+
+    @ApiModelProperty(value = "类型(0:目录,1:菜单,2:按钮)")
+    private Integer type;
+
+    @ApiModelProperty(value = "路由地址")
+    private String path;
+
+    @ApiModelProperty(value = "组件路径")
+    private String component;
+
+    @ApiModelProperty(value = "图标")
     private String icon;
-    //排序
-    private Integer sortValue;
-    //状态(0:禁止,1:正常)
-    private Integer status;
-    //创建时间
-    @TableField(fill = FieldFill.INSERT)
-    private Date createTime;
-    //更新时间
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;
-    //删除标记（0:可用 1:已删除）
-    private Integer isDeleted;
-    //授权路径
+
+    @ApiModelProperty(value = "授权路径")
     private String url;
+
+    @ApiModelProperty(value = "排序")
+    private Integer sortValue;
+
+    @ApiModelProperty(value = "状态(0:禁止,1:正常)")
+    private Integer status;
+
+    @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @ApiModelProperty(value = "更新时间")
+    private Date updateTime;
+
+    @ApiModelProperty(value = "删除标记（0:可用 1:已删除）")
+    private Integer isDeleted;
+
     // 下级列表
     @TableField(exist = false)
     private List<SystemMenu> children;

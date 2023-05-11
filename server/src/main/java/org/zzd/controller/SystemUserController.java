@@ -1,6 +1,8 @@
 package org.zzd.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,9 +38,9 @@ public class SystemUserController {
 
     @Log(title = "分页查询用户", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "分页查询用户")
-    @PostMapping("/querySystemUserPage")
+    @GetMapping("/querySystemUserPage")
     @PreAuthorize("hasAuthority('bnt.sysUser.list')")
-    public ResponseResult<PageHelper<SystemUser>> queryPage(@RequestBody UserInfoPageParam userInfoPageParam) {
+    public ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam userInfoPageParam) {
         return systemUserService.queryPage(userInfoPageParam);
     }
 
@@ -51,7 +53,7 @@ public class SystemUserController {
             return ResponseResult.success(systemUser);
         }
         else {
-            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID.getCode(), ResultCodeEnum.PARAM_NOT_VALID.getMessage());
+            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID);
         }
     }
 
@@ -79,7 +81,7 @@ public class SystemUserController {
             return ResponseResult.success();
         }
         else {
-            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID.getCode(), ResultCodeEnum.PARAM_NOT_VALID.getMessage());
+            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID);
         }
     }
 

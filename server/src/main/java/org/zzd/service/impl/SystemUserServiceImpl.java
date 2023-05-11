@@ -152,17 +152,13 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam params) {
-        int pageNum = params.getPageNum();
-        int pageSize = params.getPageSize();
-        Page<SystemUser> page = new Page(pageNum, pageSize);
-
         LambdaQueryWrapper<SystemUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        // 用户名
+        // 用户名模糊查询
         if (!StringUtils.isBlank(params.getUsername())) {
             lambdaQueryWrapper.like(SystemUser::getUsername, params.getUsername());
         }
-
-        IPage<SystemUser> iPage = this.page(page, lambdaQueryWrapper);
+        Page<SystemUser> page = new Page<>(params.getPageNum(), params.getPageSize());
+        IPage<SystemUser> iPage = systemUserMapper.selectPage(page, lambdaQueryWrapper);
         return ResponseResult.success(PageHelper.restPage(iPage));
     }
 
@@ -174,7 +170,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public ResponseResult insertSystemUser(CreateUserDto createUserDto) {
         if (StringUtils.isBlank(createUserDto.getUsername())) {
-            throw new ResponseException(ResultCodeEnum.PARAM_IS_BLANK.getCode(), "登录名不能为空");
+            throw new ResponseException("登录名不能为空");
         }
         Long count = systemUserMapper.selectCount(new QueryWrapper<SystemUser>().eq("username", createUserDto.getUsername()));
         if (count > 0) {

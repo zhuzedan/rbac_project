@@ -1,9 +1,6 @@
 package org.zzd.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -63,6 +60,7 @@ public class SystemUser implements Serializable {
     private Date updateTime;
     
     @ApiModelProperty(value = "删除标记（0:可用 1:已删除）")
+    @TableLogic
     private Integer isDeleted;
     
     @ApiModelProperty(value = "真实姓名")
