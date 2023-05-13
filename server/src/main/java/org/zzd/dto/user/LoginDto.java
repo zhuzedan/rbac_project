@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -18,8 +19,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ApiModel(value = "登录对象")
 public class LoginDto implements Serializable {
+    @NotBlank
     @ApiModelProperty(value = "用户名", required = true)
     private String username;
+
+    @NotBlank
     @ApiModelProperty(value = "密码", required = true)
     private String password;
 }
