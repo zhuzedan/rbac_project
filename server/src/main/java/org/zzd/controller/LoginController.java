@@ -62,9 +62,7 @@ public class LoginController {
         if (captcha.getCharType() - 1 == LoginCodeEnum.ARITHMETIC.ordinal() && captchaValue.contains(".")) {
             captchaValue = captchaValue.split("\\.")[0];
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("图片验证码结果是" + captchaValue);
-        }
+        logger.info("图片验证码结果是" + captchaValue);
         // 保存到session
         request.getSession().setAttribute("captcha", captchaValue);
         // 验证码信息
