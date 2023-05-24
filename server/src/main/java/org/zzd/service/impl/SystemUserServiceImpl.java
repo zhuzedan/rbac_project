@@ -32,6 +32,7 @@ import org.zzd.service.SystemUserService;
 import org.zzd.utils.JwtTokenUtil;
 import org.zzd.utils.PageHelper;
 import org.zzd.utils.RedisCache;
+import org.zzd.utils.ThreadLocalUtil;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -78,6 +79,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
         SystemUser systemUser;
         UserDetails userDetails;
+        ThreadLocalUtil.setUsername(username);
         try {
             userDetails = loadUserByUsername(username);
             systemUser = ((SecuritySystemUser) userDetails).getSystemUser();

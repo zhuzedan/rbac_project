@@ -9,6 +9,7 @@ import org.zzd.entity.SystemMenu;
 import org.zzd.mapper.SystemMenuMapper;
 import org.zzd.result.ResponseResult;
 import org.zzd.service.SystemMenuService;
+import org.zzd.utils.AuthUtils;
 import org.zzd.utils.MenuHelper;
 
 import java.util.List;
@@ -36,18 +37,12 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
     }
 
     /**
-     * @return org.zzd.result.ResponseResult
-     * @apiNote 查管理系统左侧栏菜单
+     * @apiNote 前端侧边栏菜单列表
      */
     @Override
     public ResponseResult queryAsideMenu() {
-        //先查出一级菜单
-        QueryWrapper<SystemMenu> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("status", 1);
-        List<SystemMenu> parentMenuList = systemMenuMapper.selectList(queryWrapper);
-        //构建树形数据
-        List<SystemMenu> result = MenuHelper.buildTree(parentMenuList);
-        return ResponseResult.success(result);
+        List<SystemMenu> systemUserMenuList = systemMenuMapper.getAsideMenuList(AuthUtils.getUserId());
+        return ResponseResult.success(systemUserMenuList);
     }
 }
 

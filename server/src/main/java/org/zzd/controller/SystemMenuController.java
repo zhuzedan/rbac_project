@@ -10,10 +10,9 @@ import org.zzd.result.ResponseResult;
 import org.zzd.service.SystemMenuService;
 
 /**
- * 菜单表(SystemMenu)表控制层
- *
+ * @apiNote 菜单表(SystemMenu)表控制层
  * @author zzd
- * @since 2023-03-19 21:46:06
+ * @date 2023-05-24 10:21:08
  */
 @Api(tags = "菜单管理")
 @RestController

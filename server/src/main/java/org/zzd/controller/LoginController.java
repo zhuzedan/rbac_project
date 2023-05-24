@@ -23,9 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author :zzd
- * @apiNote :用户登录接口
- * @date : 2023-03-02 13:41
+ * @author zzd
+ * @apiNote 用户登录接口
+ * @date 2023-03-02 13:41
  */
 @RestController
 @Api(tags = "用户登录")
@@ -49,8 +49,8 @@ public class LoginController {
     @LoginLog
     @ApiOperation("用户登录（captcha）")
     @PostMapping("/loginCaptcha")
-    public ResponseResult loginAndCaptcha(@RequestBody LoginCaptchaDto loginCaptchaDto,HttpServletRequest request) {
-        return systemUserService.loginCaptcha(loginCaptchaDto,request);
+    public ResponseResult loginAndCaptcha(@RequestBody LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
+        return systemUserService.loginCaptcha(loginCaptchaDto, request);
     }
 
     @ApiOperation(value = "获取验证码")
@@ -62,7 +62,9 @@ public class LoginController {
         if (captcha.getCharType() - 1 == LoginCodeEnum.ARITHMETIC.ordinal() && captchaValue.contains(".")) {
             captchaValue = captchaValue.split("\\.")[0];
         }
-        logger.info("图片验证码结果是"+captchaValue);
+        if (logger.isDebugEnabled()) {
+            logger.debug("图片验证码结果是" + captchaValue);
+        }
         // 保存到session
         request.getSession().setAttribute("captcha", captchaValue);
         // 验证码信息
@@ -78,6 +80,7 @@ public class LoginController {
     }
 
     //用户退出登录
+    @Log(title = "用户退出登录", businessType = BusinessType.OTHER)
     @ApiOperation("退出登录")
     @PostMapping("/logout")
     public ResponseResult logout() {
