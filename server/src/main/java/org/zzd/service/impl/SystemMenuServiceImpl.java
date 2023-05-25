@@ -1,6 +1,5 @@
 package org.zzd.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +8,8 @@ import org.zzd.entity.SystemMenu;
 import org.zzd.mapper.SystemMenuMapper;
 import org.zzd.result.ResponseResult;
 import org.zzd.service.SystemMenuService;
-import org.zzd.utils.AuthUtils;
 import org.zzd.utils.MenuHelper;
+import org.zzd.utils.SecurityUtils;
 
 import java.util.List;
 
@@ -41,8 +40,9 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
      */
     @Override
     public ResponseResult queryAsideMenu() {
-        List<SystemMenu> systemUserMenuList = systemMenuMapper.getAsideMenuList(AuthUtils.getUserId());
-        return ResponseResult.success(systemUserMenuList);
+        List<SystemMenu> systemUserMenuList = systemMenuMapper.getAsideMenuList(SecurityUtils.getUserId());
+        //构建树形数据
+        List<SystemMenu> result = MenuHelper.buildTree(systemUserMenuList);
+        return ResponseResult.success(result);
     }
 }
-

@@ -36,6 +36,22 @@ public class SystemUserController {
     @Autowired
     private SystemUserService systemUserService;
 
+    //获取用户信息
+    @Log(title = "获取当前登录用户信息", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
+    @ApiOperation("用户信息")
+    @GetMapping("/info")
+    public ResponseResult getInfo() {
+        return systemUserService.getInfo();
+    }
+
+    //用户退出登录
+    @Log(title = "用户退出登录", businessType = BusinessType.OTHER)
+    @ApiOperation("退出登录")
+    @PostMapping("/logout")
+    public ResponseResult logout() {
+        return ResponseResult.success();
+    }
+
     @Log(title = "分页查询用户", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "分页查询用户")
     @GetMapping("/querySystemUserPage")

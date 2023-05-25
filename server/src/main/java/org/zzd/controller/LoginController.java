@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2023-03-02 13:41
  */
 @RestController
-@Api(tags = "用户登录")
-@RequestMapping("/api/systemUser")
+@Api(tags = "用户登录(可匿名访问的接口)")
+@RequestMapping("/api/auth")
 public class LoginController {
     @Autowired
     SystemUserService systemUserService;
@@ -38,7 +38,6 @@ public class LoginController {
 
     private final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
-    // 登录
     @LoginLog
     @ApiOperation("用户登录")
     @PostMapping("/login")
@@ -67,22 +66,6 @@ public class LoginController {
         request.getSession().setAttribute("captcha", captchaValue);
         // 验证码信息
         return captcha.toBase64();
-    }
-
-    //获取用户信息
-    @Log(title = "获取当前登录用户信息", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
-    @ApiOperation("用户信息")
-    @GetMapping("/info")
-    public ResponseResult getInfo() {
-        return systemUserService.getInfo();
-    }
-
-    //用户退出登录
-    @Log(title = "用户退出登录", businessType = BusinessType.OTHER)
-    @ApiOperation("退出登录")
-    @PostMapping("/logout")
-    public ResponseResult logout() {
-        return ResponseResult.success();
     }
 
 }
