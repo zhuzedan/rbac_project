@@ -1,6 +1,7 @@
 package org.zzd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.springframework.stereotype.Repository;
 import org.zzd.entity.SystemUser;
 
 /**
@@ -9,6 +10,7 @@ import org.zzd.entity.SystemUser;
  * @author zzd
  * @since 2023-03-02 13:53:39
  */
+@Repository
 public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
 }

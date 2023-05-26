@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,14 +30,12 @@ import org.zzd.result.ResultCodeEnum;
 import org.zzd.service.SystemUserService;
 import org.zzd.utils.JwtTokenUtil;
 import org.zzd.utils.PageHelper;
-import org.zzd.utils.RedisCache;
+import org.zzd.utils.SecurityUtils;
 import org.zzd.utils.ThreadLocalUtil;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -56,8 +53,6 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     AuthenticationManager authenticationManager;
     @Autowired
     PasswordEncoder passwordEncoder;
-    @Autowired
-    RedisCache redisCache;
     @Resource
     private JwtTokenUtil jwtTokenUtil;
 
@@ -68,11 +63,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser login = doLogin(loginDto.getUsername(), loginDto.getPassword());
         SecuritySystemUser user = new SecuritySystemUser(login);
         String token = jwtTokenUtil.generateToken(user);
-        Map<String, Object> map = new HashMap();
-        map.put("token", token);
-        map.put("tokenHead", SecurityConstants.TOKEN_PREFIX);
-        map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());
-        return ResponseResult.success("登录成功", map);
+        LoginRespDto loginRespDto = new LoginRespDto(SecurityConstants.TOKEN_PREFIX, token, jwtTokenUtil.getExpiredDateFromToken(token).getTime());
+        return ResponseResult.success("登录成功", loginRespDto);
     }
 
     public SystemUser doLogin(String username, String password) {
@@ -99,15 +91,12 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public ResponseResult<Map<String, Object>> loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
+    public ResponseResult loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
         SystemUser login = doCaptchaLogin(loginCaptchaDto, request);
         SecuritySystemUser user = new SecuritySystemUser(login);
         String token = jwtTokenUtil.generateToken(user);
-        Map<String, Object> map = new HashMap();
-        map.put("token", token);
-        map.put("tokenHead", SecurityConstants.TOKEN_PREFIX);
-        map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());
-        return ResponseResult.success(map);
+        LoginRespDto loginRespDto = new LoginRespDto(SecurityConstants.TOKEN_PREFIX, token, jwtTokenUtil.getExpiredDateFromToken(token).getTime());
+        return ResponseResult.success("登录成功", loginRespDto);
     }
 
     public SystemUser doCaptchaLogin(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
@@ -143,7 +132,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
      */
     @Override
     public ResponseResult getInfo() {
-        SecuritySystemUser systemSecurityUser = getCurrentSecuritySystemUser();
+        SecuritySystemUser systemSecurityUser = SecurityUtils.getCurrentSecuritySystemUser();
         SystemUser systemUser = systemSecurityUser.getSystemUser();
         List<SystemMenu> menus = systemSecurityUser.getMenus();
         //获取角色权限编码字段
@@ -183,44 +172,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             systemUser.setPassword(passwordEncoder.encode(systemUser.getPassword()));
         }
         //创建人
-        systemUser.setCreateBy(getCurrentSystemUser().getUsername());
+        systemUser.setCreateBy(SecurityUtils.getCurrentSystemUser().getUsername());
         systemUserMapper.insert(systemUser);
         return ResponseResult.success();
-    }
-
-    /**
-     * @return org.zzd.pojo.SecuritySystemUser
-     * @apiNote 获得当前的带detail的用户
-     * @date 2023/3/15 10:51
-     */
-    public SecuritySystemUser getCurrentSecuritySystemUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new ResponseException("用户信息查询失败");
-        }
-        return (SecuritySystemUser) authentication.getPrincipal();
-    }
-
-    /**
-     * @return org.zzd.entity.SystemUser
-     * @apiNote 获得当前用户
-     */
-    public SystemUser getCurrentSystemUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new ResponseException("用户信息查询失败");
-        }
-        if (authentication.getPrincipal() instanceof UserDetails) {
-            SecuritySystemUser systemUser = (SecuritySystemUser) authentication.getPrincipal();
-            return systemUser.getSystemUser();
-        }
-        throw new ResponseException("找不到当前登录的信息");
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
         SystemUser systemUser = systemUserMapper.selectOne(new QueryWrapper<SystemUser>().eq("username", username));
-
         //获取菜单列表
         List<SystemMenu> menuList = systemMenuMapper.getSystemUserMenuList(systemUser.getId());
         //获取权限集合
