@@ -1,8 +1,6 @@
 package org.zzd.controller;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -55,7 +53,7 @@ public class SystemUserController {
     @Log(title = "分页查询用户", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "分页查询用户")
     @GetMapping("/querySystemUserPage")
-    @PreAuthorize("hasAuthority('bnt.sysUser.list')")
+    @PreAuthorize("@ex.hasAuthority('btn.sysUser.list')")
     public ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam userInfoPageParam) {
         return systemUserService.queryPage(userInfoPageParam);
     }
@@ -75,6 +73,7 @@ public class SystemUserController {
 
     @Log(title = "新增用户", businessType = BusinessType.INSERT, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "新增数据")
+    @PreAuthorize("@ex.hasAuthority('btn.sysUser.insert')")
     @PostMapping("/insertSystemUser")
     public ResponseResult insert(@RequestBody CreateUserDto createUserDto) {
         return systemUserService.insertSystemUser(createUserDto);
@@ -83,6 +82,7 @@ public class SystemUserController {
     @Log(title = "修改用户", businessType = BusinessType.UPDATE, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "修改数据")
     @PostMapping("/update")
+    @PreAuthorize("@ex.hasAuthority('btn.sysUser.update')")
     public ResponseResult update(@RequestBody SystemUser systemUser) {
         systemUserService.updateById(systemUser);
         return ResponseResult.success();
@@ -91,6 +91,7 @@ public class SystemUserController {
     @Log(title = "删除用户", businessType = BusinessType.DELETE, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "删除数据")
     @DeleteMapping("delete")
+    @PreAuthorize("@ex.hasAuthority('btn.sysUser.delete')")
     public ResponseResult delete(Long id) {
         boolean flag = systemUserService.removeById(id);
         if (flag) {
