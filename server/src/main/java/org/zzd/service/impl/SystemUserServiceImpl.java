@@ -25,6 +25,7 @@ import org.zzd.entity.SystemUser;
 import org.zzd.exception.ResponseException;
 import org.zzd.mapper.SystemMenuMapper;
 import org.zzd.mapper.SystemUserMapper;
+import org.zzd.mapper.SystemUserRoleMapper;
 import org.zzd.pojo.SecuritySystemUser;
 import org.zzd.result.ResponseResult;
 import org.zzd.result.ResultCodeEnum;
@@ -50,6 +51,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     private SystemUserMapper systemUserMapper;
     @Autowired
     private SystemMenuMapper systemMenuMapper;
+    @Autowired
+    private SystemUserRoleMapper systemUserRoleMapper;
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
@@ -157,6 +160,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (!StringUtils.isBlank(params.getUserType())) {
             lambdaQueryWrapper.eq(SystemUser::getUserType, params.getUserType());
         }
+        //角色
+        if (!StringUtils.isBlank(params.getRoleId())) {
+            List<String> userIds = systemUserRoleMapper.getUserIds(params.getRoleId());
+            lambdaQueryWrapper.in(SystemUser::getId, userIds);
+        }
         Page<SystemUser> page = new Page<>(params.getPageNum(), params.getPageSize());
         IPage<SystemUser> iPage = systemUserMapper.selectPage(page, lambdaQueryWrapper);
         return ResponseResult.success(PageHelper.restPage(iPage));
@@ -173,7 +181,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             throw new ResponseException("用户已存在");
         }
         SystemUser systemUser = new SystemUser();
-        BeanUtils.copyProperties(createUserDto,systemUser);
+        BeanUtils.copyProperties(createUserDto, systemUser);
         if (!StringUtils.isBlank(systemUser.getPassword())) {
             systemUser.setPassword(passwordEncoder.encode(systemUser.getPassword()));
         }
@@ -188,7 +196,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public void updateSystemUser(UpdateUserDto updateUserDto) {
         SystemUser systemUser = new SystemUser();
-        BeanUtils.copyProperties(updateUserDto,systemUser);
+        BeanUtils.copyProperties(updateUserDto, systemUser);
         //更新人
         systemUser.setUpdateBy(SecurityUtils.getCurrentSystemUser().getUsername());
         int flag = systemUserMapper.updateById(systemUser);

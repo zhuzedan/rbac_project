@@ -22,7 +22,7 @@ public class UserInfoPageParam extends BasePageParam {
     private String status;
 
     @ApiModelProperty(value = "角色id")
-    private Integer roleId;
+    private String roleId;
 
     @ApiModelProperty(value = "是否是移动端用户")
     private String userType;
