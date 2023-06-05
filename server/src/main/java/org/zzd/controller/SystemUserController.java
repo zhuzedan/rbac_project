@@ -4,9 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.zzd.annotation.Log;
 import org.zzd.dto.user.CreateUserDto;
+import org.zzd.dto.user.UpdateUserDto;
 import org.zzd.dto.user.UserInfoPageParam;
 import org.zzd.entity.SystemUser;
 import org.zzd.enums.BusinessType;
@@ -75,16 +77,17 @@ public class SystemUserController {
     @ApiOperation(value = "新增数据")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.insert')")
     @PostMapping("/insertSystemUser")
-    public ResponseResult insert(@RequestBody CreateUserDto createUserDto) {
-        return systemUserService.insertSystemUser(createUserDto);
+    public ResponseResult insert(@Validated @RequestBody CreateUserDto createUserDto) {
+        systemUserService.insertSystemUser(createUserDto);
+        return ResponseResult.success();
     }
 
     @Log(title = "修改用户", businessType = BusinessType.UPDATE, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "修改数据")
-    @PostMapping("/update")
+    @PostMapping("/updateSystemUser")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.update')")
-    public ResponseResult update(@RequestBody SystemUser systemUser) {
-        systemUserService.updateById(systemUser);
+    public ResponseResult update(@Validated @RequestBody UpdateUserDto updateUserDto) {
+        systemUserService.updateSystemUser(updateUserDto);
         return ResponseResult.success();
     }
 
@@ -93,13 +96,8 @@ public class SystemUserController {
     @DeleteMapping("delete")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.delete')")
     public ResponseResult delete(Long id) {
-        boolean flag = systemUserService.removeById(id);
-        if (flag) {
-            return ResponseResult.success();
-        }
-        else {
-            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID);
-        }
+        systemUserService.deleteSystemUser(id);
+        return ResponseResult.success();
     }
 
     @Log(title = "批量删除用户", businessType = BusinessType.DELETE, operatorType = OperatorType.MANAGE)

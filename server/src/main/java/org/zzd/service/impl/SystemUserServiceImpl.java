@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -148,6 +149,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (!StringUtils.isBlank(params.getUsername())) {
             lambdaQueryWrapper.like(SystemUser::getUsername, params.getUsername());
         }
+        //用户状态
+        if (!StringUtils.isBlank(params.getStatus())) {
+            lambdaQueryWrapper.eq(SystemUser::getStatus, params.getStatus());
+        }
+        //是否移动端用户
+        if (!StringUtils.isBlank(params.getUserType())) {
+            lambdaQueryWrapper.eq(SystemUser::getUserType, params.getUserType());
+        }
         Page<SystemUser> page = new Page<>(params.getPageNum(), params.getPageSize());
         IPage<SystemUser> iPage = systemUserMapper.selectPage(page, lambdaQueryWrapper);
         return ResponseResult.success(PageHelper.restPage(iPage));
@@ -155,26 +164,47 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     /**
      * @apiNote 新建用户
-     * @param createUserDto: 新建用户的对象
-     * @return org.zzd.result.ResponseResult
+     * @param createUserDto : 新建用户的对象
      */
     @Override
-    public ResponseResult insertSystemUser(CreateUserDto createUserDto) {
-        if (StringUtils.isBlank(createUserDto.getUsername())) {
-            throw new ResponseException("登录名不能为空");
-        }
+    public void insertSystemUser(CreateUserDto createUserDto) {
         Long count = systemUserMapper.selectCount(new QueryWrapper<SystemUser>().eq("username", createUserDto.getUsername()));
         if (count > 0) {
             throw new ResponseException("用户已存在");
         }
-        SystemUser systemUser = SystemUser.insertUserConvert(createUserDto);
+        SystemUser systemUser = new SystemUser();
+        BeanUtils.copyProperties(createUserDto,systemUser);
         if (!StringUtils.isBlank(systemUser.getPassword())) {
             systemUser.setPassword(passwordEncoder.encode(systemUser.getPassword()));
         }
         //创建人
         systemUser.setCreateBy(SecurityUtils.getCurrentSystemUser().getUsername());
-        systemUserMapper.insert(systemUser);
-        return ResponseResult.success();
+        int flag = systemUserMapper.insert(systemUser);
+        if (flag == 0) {
+            throw new ResponseException(ResultCodeEnum.CREATE_FAIL);
+        }
+    }
+
+    @Override
+    public void updateSystemUser(UpdateUserDto updateUserDto) {
+        SystemUser systemUser = new SystemUser();
+        BeanUtils.copyProperties(updateUserDto,systemUser);
+        int flag = systemUserMapper.updateById(systemUser);
+        if (flag == 0) {
+            throw new ResponseException("更新失败");
+        }
+    }
+
+    @Override
+    public void deleteSystemUser(Long id) {
+        SystemUser systemUser = systemUserMapper.selectById(id);
+        if (systemUser == null) {
+            throw new ResponseException(ResultCodeEnum.DELETE_FAIL);
+        }
+        int flag = systemMenuMapper.deleteById(id);
+        if (flag == 0) {
+            throw new ResponseException(ResultCodeEnum.DELETE_FAIL);
+        }
     }
 
     @Override

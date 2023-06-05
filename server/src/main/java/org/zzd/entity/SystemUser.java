@@ -80,21 +80,5 @@ public class SystemUser implements Serializable {
     
     @ApiModelProperty(value = "是否是移动端用户")
     private Integer ifWxUser;
-
-    //新增用户
-    public static SystemUser insertUserConvert(CreateUserDto createUserDto) {
-        SystemUser systemUser = new SystemUser();
-        systemUser.setUsername(createUserDto.getUsername());
-        systemUser.setPassword(createUserDto.getPassword());
-        systemUser.setEmail(createUserDto.getEmail());
-        systemUser.setPhone(createUserDto.getPhone());
-        systemUser.setDescription(createUserDto.getDescription());
-        systemUser.setGender(createUserDto.getGender());
-        systemUser.setBirthday(createUserDto.getBirthday());
-        systemUser.setRealname(createUserDto.getRealname());
-        systemUser.setAvatar(createUserDto.getAvatar());
-        systemUser.setIfWxUser(createUserDto.getIfWxUser());
-        return systemUser;
-    }
     
 }

@@ -17,4 +17,14 @@ import org.zzd.param.BasePageParam;
 public class UserInfoPageParam extends BasePageParam {
     @ApiModelProperty(value = "用户名")
     private String username;
+
+    @ApiModelProperty(value = "状态")
+    private String status;
+
+    @ApiModelProperty(value = "角色id")
+    private Integer roleId;
+
+    @ApiModelProperty(value = "是否是移动端用户")
+    private String userType;
+
 }

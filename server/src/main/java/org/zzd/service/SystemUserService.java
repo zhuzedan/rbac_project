@@ -2,10 +2,7 @@ package org.zzd.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.zzd.dto.user.CreateUserDto;
-import org.zzd.dto.user.LoginCaptchaDto;
-import org.zzd.dto.user.LoginDto;
-import org.zzd.dto.user.UserInfoPageParam;
+import org.zzd.dto.user.*;
 import org.zzd.entity.SystemUser;
 import org.zzd.result.ResponseResult;
 import org.zzd.utils.PageHelper;
@@ -30,6 +27,10 @@ public interface SystemUserService extends IService<SystemUser> {
 
     UserDetails loadUserByUsername(String username);
 
-    ResponseResult insertSystemUser(CreateUserDto createUserDto);
+    void insertSystemUser(CreateUserDto createUserDto);
+
+    void updateSystemUser(UpdateUserDto updateUserDto);
+
+    void deleteSystemUser(Long id);
 }
 

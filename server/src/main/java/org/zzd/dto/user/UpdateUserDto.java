@@ -5,25 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
- * @author :zzd
- * @apiNote :创建用户
- * @date : 2023-03-31 9:09
+ * @apiNote 更新用户
+ * @author zzd
+ * @date 2023-06-05 15:48
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserDto {
-    @ApiModelProperty(value = "用户名")
-    @NotBlank(message = "用户名不能为空")
-    private String username;
+public class UpdateUserDto {
+    @ApiModelProperty(value = "用户id")
+    private Long id;
 
-    @ApiModelProperty(value = "密码")
-    @NotBlank(message = "密码不能为空")
-    private String password;
+    @ApiModelProperty(value = "用户名")
+    private String username;
 
     @ApiModelProperty(value = "邮箱")
     private String email;
