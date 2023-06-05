@@ -60,7 +60,7 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
             if (wechatUser == null) {
                 //注册+登录
                 SystemUser systemUser = new SystemUser();
-                systemUser.setIfWxUser(1);
+                systemUser.setUserType(1);
                 systemUser.setUsername(UUID.randomUUID().toString());
                 systemUser.setNickname("起个名字" + RandomStringUtils.randomAlphabetic(5));
                 systemUserService.save(systemUser);
@@ -83,7 +83,7 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
                 SecuritySystemUser securitySystemUser = new SecuritySystemUser(systemUser);
                 token = jwtTokenUtil.generateToken(securitySystemUser);
             }
-            Map<String, Object> map = new HashMap();
+            Map<String, Object> map = new HashMap<>();
             map.put("token", token);
             map.put("tokenHead", SecurityConstants.TOKEN_PREFIX);
             map.put("expireTime", jwtTokenUtil.getExpiredDateFromToken(token).getTime());

@@ -20,7 +20,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("t_system_user")
 public class SystemUser implements Serializable {
-    @TableId
+    @TableId(type = IdType.AUTO)
     @ApiModelProperty(value = "用户id")
     private Long id;
 
@@ -74,11 +74,11 @@ public class SystemUser implements Serializable {
     
     @ApiModelProperty(value = "创建人")
     private String createBy;
+
+    @ApiModelProperty(value = "更新人")
+    private String updateBy;
     
     @ApiModelProperty(value = "状态1启用0禁用")
     private Integer status;
-    
-    @ApiModelProperty(value = "是否是移动端用户")
-    private Integer ifWxUser;
     
 }

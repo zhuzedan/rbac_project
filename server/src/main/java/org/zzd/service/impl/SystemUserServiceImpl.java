@@ -189,6 +189,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     public void updateSystemUser(UpdateUserDto updateUserDto) {
         SystemUser systemUser = new SystemUser();
         BeanUtils.copyProperties(updateUserDto,systemUser);
+        //更新人
+        systemUser.setUpdateBy(SecurityUtils.getCurrentSystemUser().getUsername());
         int flag = systemUserMapper.updateById(systemUser);
         if (flag == 0) {
             throw new ResponseException("更新失败");
@@ -201,7 +203,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (systemUser == null) {
             throw new ResponseException(ResultCodeEnum.DELETE_FAIL);
         }
-        int flag = systemMenuMapper.deleteById(id);
+        int flag = systemUserMapper.deleteById(id);
         if (flag == 0) {
             throw new ResponseException(ResultCodeEnum.DELETE_FAIL);
         }

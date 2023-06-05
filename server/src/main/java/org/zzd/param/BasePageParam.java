@@ -15,10 +15,10 @@ import javax.validation.constraints.NotNull;
 @ApiModel("分页对象")
 public class BasePageParam {
     @NotNull
-    @ApiModelProperty(value = "当前页", required = true)
+    @ApiModelProperty(value = "当前页", example = "1", required = true)
     private Integer pageNum;
 
     @NotNull
-    @ApiModelProperty(value = "页面大小", required = true)
+    @ApiModelProperty(value = "页面大小", example = "10", required = true)
     private Integer pageSize;
 }

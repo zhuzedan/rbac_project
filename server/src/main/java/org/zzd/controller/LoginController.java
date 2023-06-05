@@ -7,32 +7,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.zzd.annotation.Log;
 import org.zzd.annotation.LoginLog;
 import org.zzd.bean.LoginCodeEnum;
 import org.zzd.bean.LoginProperties;
 import org.zzd.dto.user.LoginCaptchaDto;
 import org.zzd.dto.user.LoginDto;
-import org.zzd.enums.BusinessType;
-import org.zzd.enums.OperatorType;
 import org.zzd.result.ResponseResult;
 import org.zzd.service.SystemUserService;
+import org.zzd.service.WeChatService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * @apiNote 登录相关接口
  * @author zzd
- * @apiNote 用户登录接口
  * @date 2023-03-02 13:41
  */
 @RestController
-@Api(tags = "用户登录(可匿名访问的接口)")
+@Api(tags = "登录相关接口")
 @RequestMapping("/api/auth")
 public class LoginController {
     @Autowired
     SystemUserService systemUserService;
+    @Autowired
+    private WeChatService weChatService;
     @Resource
     private LoginProperties loginProperties;
 
@@ -66,6 +66,11 @@ public class LoginController {
         request.getSession().setAttribute("captcha", captchaValue);
         // 验证码信息
         return captcha.toBase64();
+    }
+
+    @GetMapping("/wxLogin")
+    public ResponseResult wxLogin(String code) {
+        return weChatService.wxLogin(code);
     }
 
 }
