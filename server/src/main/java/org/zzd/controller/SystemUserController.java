@@ -1,5 +1,6 @@
 package org.zzd.controller;
 
+import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,6 @@ public class SystemUserController {
     @Autowired
     private SystemUserService systemUserService;
 
-    //获取用户信息
     @Log(title = "获取当前登录用户信息", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
     @ApiOperation("用户信息")
     @GetMapping("/info")
@@ -44,7 +44,6 @@ public class SystemUserController {
         return systemUserService.getInfo();
     }
 
-    //用户退出登录
     @Log(title = "用户退出登录", businessType = BusinessType.OTHER)
     @ApiOperation("退出登录")
     @PostMapping("/logout")
@@ -63,14 +62,10 @@ public class SystemUserController {
     @Log(title = "用户详情", businessType = BusinessType.READ, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "获取详情")
     @GetMapping("/read")
-    public ResponseResult selectOne(Integer id) {
+    public ResponseResult queryOneSystemUser(Integer id) {
         SystemUser systemUser = systemUserService.getById(id);
-        if (!Objects.isNull(systemUser)) {
-            return ResponseResult.success(systemUser);
-        }
-        else {
-            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID);
-        }
+        Assert.notNull(systemUser,"该用户不存在");
+        return ResponseResult.success(systemUser);
     }
 
     @Log(title = "新增用户", businessType = BusinessType.INSERT, operatorType = OperatorType.MANAGE)

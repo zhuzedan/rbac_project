@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.zzd.constant.SecurityConstants;
 import org.zzd.dto.user.*;
 import org.zzd.entity.SystemMenu;
@@ -45,6 +46,7 @@ import java.util.Objects;
  * @author zzd
  * @since 2023-03-02 13:53:39
  */
+@Transactional
 @Service("systemUserService")
 public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemUser> implements SystemUserService {
     @Autowired
