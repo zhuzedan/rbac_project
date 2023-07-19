@@ -16,14 +16,14 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2023-03-02 13:53:39
  */
 public interface SystemUserService extends IService<SystemUser> {
-    ResponseResult login(LoginDto loginDto);
+    ResponseResult<?> login(LoginDto loginDto);
 
-    ResponseResult loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request);
+    ResponseResult<?> loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request);
 
-    ResponseResult getInfo();
+    ResponseResult<?> getInfo();
 
     // 分页查询
-    ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam params);
+    PageHelper<SystemUser> queryPage(UserInfoPageParam params);
 
     UserDetails loadUserByUsername(String username);
 

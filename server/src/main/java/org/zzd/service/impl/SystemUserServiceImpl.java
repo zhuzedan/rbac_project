@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,10 +30,7 @@ import org.zzd.pojo.SecuritySystemUser;
 import org.zzd.result.ResponseResult;
 import org.zzd.result.ResultCodeEnum;
 import org.zzd.service.SystemUserService;
-import org.zzd.utils.JwtTokenUtil;
-import org.zzd.utils.PageHelper;
-import org.zzd.utils.SecurityUtils;
-import org.zzd.utils.ThreadLocalUtil;
+import org.zzd.utils.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +61,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     private final Logger logger = LoggerFactory.getLogger(SystemUserServiceImpl.class);
 
     @Override
-    public ResponseResult login(LoginDto loginDto) throws ResponseException {
+    public ResponseResult<?> login(LoginDto loginDto) throws ResponseException {
         SystemUser login = doLogin(loginDto.getUsername(), loginDto.getPassword());
         SecuritySystemUser user = new SecuritySystemUser(login);
         String token = jwtTokenUtil.generateToken(user);
@@ -97,7 +93,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public ResponseResult loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
+    public ResponseResult<?> loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
         SystemUser login = doCaptchaLogin(loginCaptchaDto, request);
         SecuritySystemUser user = new SecuritySystemUser(login);
         String token = jwtTokenUtil.generateToken(user);
@@ -137,7 +133,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
      * @return org.zzd.result.ResponseResult
      */
     @Override
-    public ResponseResult getInfo() {
+    public ResponseResult<?> getInfo() {
         SecuritySystemUser systemSecurityUser = SecurityUtils.getCurrentSecuritySystemUser();
         SystemUser systemUser = systemSecurityUser.getSystemUser();
         List<SystemMenu> menus = systemSecurityUser.getMenus();
@@ -148,7 +144,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam params) {
+    public PageHelper<SystemUser> queryPage(UserInfoPageParam params) {
         LambdaQueryWrapper<SystemUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 用户名模糊查询
         if (!StringUtils.isBlank(params.getUsername())) {
@@ -169,7 +165,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         }
         Page<SystemUser> page = new Page<>(params.getPageNum(), params.getPageSize());
         IPage<SystemUser> iPage = systemUserMapper.selectPage(page, lambdaQueryWrapper);
-        return ResponseResult.success(PageHelper.restPage(iPage));
+        return PageHelper.restPage(iPage);
     }
 
     /**
@@ -182,8 +178,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (count > 0) {
             throw new ResponseException("用户已存在");
         }
-        SystemUser systemUser = new SystemUser();
-        BeanUtils.copyProperties(createUserDto, systemUser);
+        SystemUser systemUser = BeanCopyUtils.copyBean(createUserDto, SystemUser.class);
         if (!StringUtils.isBlank(systemUser.getPassword())) {
             systemUser.setPassword(passwordEncoder.encode(systemUser.getPassword()));
         }
@@ -197,8 +192,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public void updateSystemUser(UpdateUserDto updateUserDto) {
-        SystemUser systemUser = new SystemUser();
-        BeanUtils.copyProperties(updateUserDto, systemUser);
+        SystemUser systemUser = BeanCopyUtils.copyBean(updateUserDto, SystemUser.class);
         //更新人
         systemUser.setUpdateBy(SecurityUtils.getCurrentSystemUser().getUsername());
         int flag = systemUserMapper.updateById(systemUser);

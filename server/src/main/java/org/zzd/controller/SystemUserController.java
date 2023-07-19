@@ -14,14 +14,11 @@ import org.zzd.dto.user.UserInfoPageParam;
 import org.zzd.entity.SystemUser;
 import org.zzd.enums.BusinessType;
 import org.zzd.enums.OperatorType;
-import org.zzd.exception.ResponseException;
 import org.zzd.result.ResponseResult;
-import org.zzd.result.ResultCodeEnum;
 import org.zzd.service.SystemUserService;
 import org.zzd.utils.PageHelper;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 用户表(SystemUser)表控制层
@@ -40,14 +37,14 @@ public class SystemUserController {
     @Log(title = "获取当前登录用户信息", businessType = BusinessType.SELECT, operatorType = OperatorType.MANAGE)
     @ApiOperation("用户信息")
     @GetMapping("/info")
-    public ResponseResult getInfo() {
-        return systemUserService.getInfo();
+    public ResponseResult<?> getInfo() {
+        return ResponseResult.success(systemUserService.getInfo());
     }
 
     @Log(title = "用户退出登录", businessType = BusinessType.OTHER)
     @ApiOperation("退出登录")
     @PostMapping("/logout")
-    public ResponseResult logout() {
+    public ResponseResult<?> logout() {
         return ResponseResult.success();
     }
 
@@ -56,15 +53,15 @@ public class SystemUserController {
     @GetMapping("/querySystemUserPage")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.list')")
     public ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam userInfoPageParam) {
-        return systemUserService.queryPage(userInfoPageParam);
+        return ResponseResult.success(systemUserService.queryPage(userInfoPageParam));
     }
 
     @Log(title = "用户详情", businessType = BusinessType.READ, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "获取详情")
     @GetMapping("/read")
-    public ResponseResult queryOneSystemUser(Integer id) {
+    public ResponseResult<?> queryOneSystemUser(Integer id) {
         SystemUser systemUser = systemUserService.getById(id);
-        Assert.notNull(systemUser,"该用户不存在");
+        Assert.notNull(systemUser, "该用户不存在");
         return ResponseResult.success(systemUser);
     }
 
@@ -72,7 +69,7 @@ public class SystemUserController {
     @ApiOperation(value = "新增数据")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.insert')")
     @PostMapping("/insertSystemUser")
-    public ResponseResult insert(@Validated @RequestBody CreateUserDto createUserDto) {
+    public ResponseResult<?> insert(@Validated @RequestBody CreateUserDto createUserDto) {
         systemUserService.insertSystemUser(createUserDto);
         return ResponseResult.success();
     }
@@ -81,7 +78,7 @@ public class SystemUserController {
     @ApiOperation(value = "修改数据")
     @PostMapping("/updateSystemUser")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.update')")
-    public ResponseResult update(@Validated @RequestBody UpdateUserDto updateUserDto) {
+    public ResponseResult<?> update(@Validated @RequestBody UpdateUserDto updateUserDto) {
         systemUserService.updateSystemUser(updateUserDto);
         return ResponseResult.success();
     }
@@ -90,7 +87,7 @@ public class SystemUserController {
     @ApiOperation(value = "删除数据")
     @DeleteMapping("delete")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.delete')")
-    public ResponseResult delete(Long id) {
+    public ResponseResult<?> delete(Long id) {
         systemUserService.deleteSystemUser(id);
         return ResponseResult.success();
     }
@@ -98,7 +95,7 @@ public class SystemUserController {
     @Log(title = "批量删除用户", businessType = BusinessType.DELETE, operatorType = OperatorType.MANAGE)
     @ApiOperation(value = "批量删除数据")
     @DeleteMapping("/batchRemove")
-    public ResponseResult batchRemove(@RequestBody List<Long> idList) {
+    public ResponseResult<?> batchRemove(@RequestBody List<Long> idList) {
         systemUserService.removeByIds(idList);
         return ResponseResult.success();
     }
