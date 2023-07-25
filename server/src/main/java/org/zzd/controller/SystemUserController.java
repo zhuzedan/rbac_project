@@ -17,6 +17,7 @@ import org.zzd.enums.OperatorType;
 import org.zzd.result.ResponseResult;
 import org.zzd.service.SystemUserService;
 import org.zzd.utils.PageHelper;
+import org.zzd.vo.user.QueryUserPageVo;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class SystemUserController {
     @ApiOperation(value = "分页查询用户")
     @GetMapping("/querySystemUserPage")
     @PreAuthorize("@ex.hasAuthority('btn.sysUser.list')")
-    public ResponseResult<PageHelper<SystemUser>> queryPage(UserInfoPageParam userInfoPageParam) {
+    public ResponseResult<PageHelper<QueryUserPageVo>> queryPage(UserInfoPageParam userInfoPageParam) {
         return ResponseResult.success(systemUserService.queryPage(userInfoPageParam));
     }
 

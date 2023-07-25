@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zzd.mapper.SystemUserMapper">
+
+    <resultMap id="systemUserList" type="org.zzd.vo.user.QueryUserPageVo">
+        <result column="ID" jdbcType="BIGINT" property="id"/>
+        <result column="USERNAME" jdbcType="VARCHAR" property="username"/>
+        <result column="NICKNAME" jdbcType="VARCHAR" property="nickname"/>
+        <result column="EMAIL" jdbcType="VARCHAR" property="email"/>
+        <result column="PHONE" jdbcType="VARCHAR" property="phone"/>
+        <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"/>
+        <result column="GENDER" jdbcType="VARCHAR" property="gender"/>
+        <result column="IS_DELETED" jdbcType="INTEGER" property="isDeleted"/>
+        <result column="REALNAME" jdbcType="VARCHAR" property="realname"/>
+        <result column="AVATAR" jdbcType="VARCHAR" property="avatar"/>
+        <result column="USER_TYPE" jdbcType="INTEGER" property="userType"/>
+        <result column="CREATE_BY" jdbcType="VARCHAR" property="createBy"/>
+        <result column="STATUS" jdbcType="INTEGER" property="status"/>
+        <collection property="roleList" ofType="org.zzd.vo.user.QueryUserRoleVo">
+            <result column="ROLE_ID" property="roleId"/>
+            <result column="ROLE_NAME" property="roleName"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectUserPage" resultMap="systemUserList">
+        SELECT u.id,u.username,u.realname,u.nickname,u.email,u.phone,u.avatar,u.description,u.`status`,
+               u.gender,u.user_type,u.is_deleted,u.create_by,ur.role_id,r.role_name
+        from t_system_user u LEFT JOIN t_system_user_role ur on ur.user_id = u.id LEFT JOIN t_system_role r on r.id = ur.role_id
+            ${ew.customSqlSegment}
+    </select>
+</mapper>

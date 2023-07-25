@@ -6,6 +6,7 @@ import org.zzd.dto.user.*;
 import org.zzd.entity.SystemUser;
 import org.zzd.result.ResponseResult;
 import org.zzd.utils.PageHelper;
+import org.zzd.vo.user.QueryUserPageVo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,7 +24,7 @@ public interface SystemUserService extends IService<SystemUser> {
     ResponseResult<?> getInfo();
 
     // 分页查询
-    PageHelper<SystemUser> queryPage(UserInfoPageParam params);
+    PageHelper<QueryUserPageVo> queryPage(UserInfoPageParam params);
 
     UserDetails loadUserByUsername(String username);
 

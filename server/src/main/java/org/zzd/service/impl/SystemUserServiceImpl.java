@@ -31,6 +31,7 @@ import org.zzd.result.ResponseResult;
 import org.zzd.result.ResultCodeEnum;
 import org.zzd.service.SystemUserService;
 import org.zzd.utils.*;
+import org.zzd.vo.user.QueryUserPageVo;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -144,7 +145,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     }
 
     @Override
-    public PageHelper<SystemUser> queryPage(UserInfoPageParam params) {
+    public PageHelper<QueryUserPageVo> queryPage(UserInfoPageParam params) {
         LambdaQueryWrapper<SystemUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 用户名模糊查询
         if (!StringUtils.isBlank(params.getUsername())) {
@@ -164,8 +165,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             lambdaQueryWrapper.in(SystemUser::getId, userIds);
         }
         Page<SystemUser> page = new Page<>(params.getPageNum(), params.getPageSize());
-        IPage<SystemUser> iPage = systemUserMapper.selectPage(page, lambdaQueryWrapper);
-        return PageHelper.restPage(iPage);
+        IPage<QueryUserPageVo> iPage = systemUserMapper.selectUserPage(page, lambdaQueryWrapper);
+        return PageHelper.restPage(iPage,iPage.getRecords());
     }
 
     /**
