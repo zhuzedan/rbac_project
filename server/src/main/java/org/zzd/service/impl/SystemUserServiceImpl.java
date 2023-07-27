@@ -1,6 +1,5 @@
 package org.zzd.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -146,27 +145,27 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Override
     public PageHelper<QueryUserPageVo> queryPage(UserInfoPageParam params) {
-        LambdaQueryWrapper<SystemUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SystemUser> wrapper = new QueryWrapper<>();
         // 用户名模糊查询
         if (!StringUtils.isBlank(params.getUsername())) {
-            lambdaQueryWrapper.like(SystemUser::getUsername, params.getUsername());
+            wrapper.like("username", params.getUsername());
         }
         //用户状态
         if (!StringUtils.isBlank(params.getStatus())) {
-            lambdaQueryWrapper.eq(SystemUser::getStatus, params.getStatus());
+            wrapper.eq("status", params.getStatus());
         }
         //是否移动端用户
         if (!StringUtils.isBlank(params.getUserType())) {
-            lambdaQueryWrapper.eq(SystemUser::getUserType, params.getUserType());
+            wrapper.eq("user_type", params.getUserType());
         }
         //角色
         if (!StringUtils.isBlank(params.getRoleId())) {
             List<String> userIds = systemUserRoleMapper.getUserIds(params.getRoleId());
-            lambdaQueryWrapper.in(SystemUser::getId, userIds);
+            wrapper.in("u.id", userIds);
         }
         Page<SystemUser> page = new Page<>(params.getPageNum(), params.getPageSize());
-        IPage<QueryUserPageVo> iPage = systemUserMapper.selectUserPage(page, lambdaQueryWrapper);
-        return PageHelper.restPage(iPage,iPage.getRecords());
+        IPage<QueryUserPageVo> iPage = systemUserMapper.selectUserPage(page, wrapper);
+        return PageHelper.restPage(iPage);
     }
 
     /**
@@ -179,6 +178,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (count > 0) {
             throw new ResponseException("用户已存在");
         }
+        List<String> roleIds = createUserDto.getRoleIds();
+
         SystemUser systemUser = BeanCopyUtils.copyBean(createUserDto, SystemUser.class);
         if (!StringUtils.isBlank(systemUser.getPassword())) {
             systemUser.setPassword(passwordEncoder.encode(systemUser.getPassword()));

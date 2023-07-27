@@ -1,6 +1,6 @@
 package org.zzd.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
@@ -19,5 +19,5 @@ import org.zzd.vo.user.QueryUserPageVo;
 @Repository
 public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
-    IPage<QueryUserPageVo> selectUserPage(Page<SystemUser> page, @Param(Constants.WRAPPER) LambdaQueryWrapper<SystemUser> lambdaQueryWrapper);
+    IPage<QueryUserPageVo> selectUserPage(Page<SystemUser> page, @Param(Constants.WRAPPER) QueryWrapper<SystemUser> wrapper);
 }
