@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author :zzd
@@ -48,5 +50,9 @@ public class CreateUserDto {
 
     @ApiModelProperty(value = "是否是移动端用户")
     private Integer userType;
+
+    @ApiModelProperty(value = "角色id")
+    @NotEmpty(message = "角色不能为空")
+    private List<Long> roleIds;
 
 }

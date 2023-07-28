@@ -178,17 +178,20 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (count > 0) {
             throw new ResponseException("用户已存在");
         }
-        List<String> roleIds = createUserDto.getRoleIds();
-
         SystemUser systemUser = BeanCopyUtils.copyBean(createUserDto, SystemUser.class);
         if (!StringUtils.isBlank(systemUser.getPassword())) {
             systemUser.setPassword(passwordEncoder.encode(systemUser.getPassword()));
         }
-        //创建人
         systemUser.setCreateBy(SecurityUtils.getCurrentSystemUser().getUsername());
+        //创建人
         int flag = systemUserMapper.insert(systemUser);
         if (flag == 0) {
             throw new ResponseException(ResultCodeEnum.CREATE_FAIL);
+        }
+        //把用户角色添加到数据库中
+        List<Long> roleIds = createUserDto.getRoleIds();
+        for (Long roleId : roleIds) {
+            systemUserRoleMapper.insertUserRole(systemUser.getId(),roleId);
         }
     }
 
