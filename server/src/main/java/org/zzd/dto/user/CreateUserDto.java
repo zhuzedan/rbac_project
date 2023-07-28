@@ -1,5 +1,6 @@
 package org.zzd.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,7 +40,8 @@ public class CreateUserDto {
     @ApiModelProperty(value = "性别;1=男,2=女,3=未知")
     private String gender;
 
-    @ApiModelProperty(value = "生日")
+    @ApiModelProperty(value = "生日(yyyy-MM-dd)")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date birthday;
 
     @ApiModelProperty(value = "真实姓名")

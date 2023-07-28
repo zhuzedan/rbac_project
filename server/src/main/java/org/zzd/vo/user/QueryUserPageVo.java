@@ -1,8 +1,10 @@
 package org.zzd.vo.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +34,10 @@ public class QueryUserPageVo {
 
     @ApiModelProperty(value = "性别;1=男,2=女,3=未知")
     private String gender;
+
+    @ApiModelProperty(value = "生日")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date birthday;
 
     @ApiModelProperty(value = "删除标记（0:可用 1:已删除）")
     private Integer isDeleted;
