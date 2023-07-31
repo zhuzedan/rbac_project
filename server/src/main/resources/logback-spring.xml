@@ -87,7 +87,7 @@
     </springProfile>
 
     <!-- 生产环境输出到文件 -->
-    <springProfile name="prod">
+    <springProfile name="test">
         <root level="INFO">
             <appender-ref ref="fileErrorLog"/>
             <appender-ref ref="fileInfoLog"/>
