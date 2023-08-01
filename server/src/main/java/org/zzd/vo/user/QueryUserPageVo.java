@@ -20,9 +20,6 @@ public class QueryUserPageVo {
     @ApiModelProperty(value = "用户名")
     private String username;
 
-    @ApiModelProperty(value = "昵称")
-    private String nickname;
-
     @ApiModelProperty(value = "邮箱")
     private String email;
 
@@ -43,7 +40,7 @@ public class QueryUserPageVo {
     private Integer isDeleted;
 
     @ApiModelProperty(value = "真实姓名")
-    private String realname;
+    private String realName;
 
     @ApiModelProperty(value = "头像地址")
     private String avatar;

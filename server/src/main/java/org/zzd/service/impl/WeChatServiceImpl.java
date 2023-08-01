@@ -38,11 +38,9 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
     private SystemUserService systemUserService;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-    @Autowired
-    private RedisCache redisCache;
 
     @Override
-    public ResponseResult wxLogin(String code) {
+    public ResponseResult<?> wxLogin(String code) {
         //拼接url，微信登录凭证校验接口 发起http调用
         String uri = "https://api.weixin.qq.com/sns/jscode2session?appid=" + WeChatConstant.APPID + "&secret=" + WeChatConstant.APPSECRET + "&js_code=" + code + "&grant_type=authorization_code";
         String res = HttpUtil.get(uri);
@@ -62,7 +60,6 @@ public class WeChatServiceImpl extends ServiceImpl<WechatUserMapper, WechatUser>
                 SystemUser systemUser = new SystemUser();
                 systemUser.setUserType(1);
                 systemUser.setUsername(UUID.randomUUID().toString());
-                systemUser.setNickname("起个名字" + RandomStringUtils.randomAlphabetic(5));
                 systemUserService.save(systemUser);
 
                 WechatUser wxUser = new WechatUser();

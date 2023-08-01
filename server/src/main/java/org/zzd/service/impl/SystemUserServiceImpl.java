@@ -1,5 +1,6 @@
 package org.zzd.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,6 +22,7 @@ import org.zzd.constant.SecurityConstants;
 import org.zzd.dto.user.*;
 import org.zzd.entity.SystemMenu;
 import org.zzd.entity.SystemUser;
+import org.zzd.entity.SystemUserRole;
 import org.zzd.exception.ResponseException;
 import org.zzd.mapper.SystemMenuMapper;
 import org.zzd.mapper.SystemUserMapper;
@@ -139,7 +141,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         List<SystemMenu> menus = systemSecurityUser.getMenus();
         //获取角色权限编码字段
         Object[] perms = menus.stream().filter(Objects::nonNull).map(SystemMenu::getPerms).filter(StringUtils::isNotBlank).toArray();
-        UserInfoDto userInfoDto = new UserInfoDto(systemUser.getId(), systemUser.getNickname(), systemUser.getAvatar(), systemUser.getDescription(), perms);
+        UserInfoDto userInfoDto = new UserInfoDto(systemUser.getId(), systemUser.getRealName(), systemUser.getAvatar(), systemUser.getDescription(), perms);
         return ResponseResult.success(userInfoDto);
     }
 
@@ -189,10 +191,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             throw new ResponseException(ResultCodeEnum.CREATE_FAIL);
         }
         //把用户角色添加到数据库中
-        List<Long> roleIds = createUserDto.getRoleIds();
-        for (Long roleId : roleIds) {
-            systemUserRoleMapper.insertUserRole(systemUser.getId(),roleId);
-        }
+        systemUserRoleMapper.insertUserRole(systemUser.getId(), createUserDto.getRoleIds());
     }
 
     @Override
@@ -204,6 +203,10 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         if (flag == 0) {
             throw new ResponseException("更新失败");
         }
+        // 删除用户角色
+        systemUserRoleMapper.delete(new LambdaQueryWrapper<SystemUserRole>().eq(SystemUserRole::getUserId, updateUserDto.getId()));
+        // 重新添加用户角色
+        systemUserRoleMapper.insertUserRole(systemUser.getId(), updateUserDto.getRoleIds());
     }
 
     @Override

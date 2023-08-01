@@ -45,7 +45,7 @@ public class CreateUserDto {
     private Date birthday;
 
     @ApiModelProperty(value = "真实姓名")
-    private String realname;
+    private String realName;
 
     @ApiModelProperty(value = "头像地址")
     private String avatar;

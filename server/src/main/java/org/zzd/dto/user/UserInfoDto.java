@@ -21,8 +21,8 @@ public class UserInfoDto implements Serializable {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
-    @ApiModelProperty(value = "用户名昵称")
-    private String nickname;
+    @ApiModelProperty(value = "真实姓名")
+    private String realName;
 
     @ApiModelProperty(value = "头像")
     private String avatar;

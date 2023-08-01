@@ -29,9 +29,6 @@ public class SystemUser implements Serializable {
     @ApiModelProperty(value = "密码")
     private String password;
 
-    @ApiModelProperty(value = "昵称")
-    private String nickname;
-
     @ApiModelProperty(value = "邮箱")
     private String email;
 
@@ -63,7 +60,7 @@ public class SystemUser implements Serializable {
     private Integer isDeleted;
 
     @ApiModelProperty(value = "真实姓名")
-    private String realname;
+    private String realName;
 
     @ApiModelProperty(value = "头像地址")
     private String avatar;
