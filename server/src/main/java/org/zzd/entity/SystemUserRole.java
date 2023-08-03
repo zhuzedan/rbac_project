@@ -37,7 +37,4 @@ public class SystemUserRole implements Serializable {
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 
-    @ApiModelProperty(value = "删除标记（0:可用 1:已删除）")
-    private Integer isDeleted;
-
 }

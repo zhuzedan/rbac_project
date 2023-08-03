@@ -3,11 +3,13 @@ package org.zzd.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.zzd.dto.menu.DoAssignMenuDto;
 import org.zzd.result.ResponseResult;
 import org.zzd.service.SystemMenuService;
+import org.zzd.vo.menu.AssignMenuVo;
+
+import java.util.List;
 
 /**
  * @apiNote 菜单表(SystemMenu)表控制层
@@ -22,16 +24,17 @@ public class SystemMenuController {
     @Autowired
     private SystemMenuService systemMenuService;
 
-    @ApiOperation(value = "获取菜单")
-    @GetMapping("findNodes")
-    public ResponseResult findNodes() {
-        return systemMenuService.findNodes();
+    @ApiOperation(value = "根据角色获取菜单")
+    @GetMapping("/toAssign")
+    public ResponseResult<List<AssignMenuVo>> toAssign(Long roleId) {
+        return ResponseResult.success(systemMenuService.findSystemMenuByRoleId(roleId));
     }
 
-    @ApiOperation(value = "获取左侧栏的菜单")
-    @GetMapping("/queryAsideMenus")
-    public ResponseResult queryAsideMenu() {
-        return systemMenuService.queryAsideMenu();
+    @ApiOperation(value = "分配角色的菜单权限")
+    @PostMapping("/doAssign")
+    public ResponseResult<?> doAssign(@RequestBody DoAssignMenuDto assignMenuDto) {
+        systemMenuService.doAssign(assignMenuDto);
+        return ResponseResult.success();
     }
 }
 
