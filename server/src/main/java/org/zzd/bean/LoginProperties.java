@@ -4,6 +4,7 @@ import com.wf.captcha.*;
 import com.wf.captcha.base.Captcha;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import java.util.Objects;
  * @date 2023/3/31 14:29
  */
 @Data
+@Component
 public class LoginProperties {
     private LoginCode loginCode;
 

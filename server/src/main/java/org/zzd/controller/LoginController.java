@@ -2,7 +2,6 @@ package org.zzd.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.zzd.annotation.LoginLog;
 import org.zzd.dto.user.LoginCaptchaDto;
@@ -12,6 +11,7 @@ import org.zzd.service.EasyCaptchaService;
 import org.zzd.service.SystemUserService;
 import org.zzd.service.WeChatService;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -23,11 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 @Api(tags = "登录相关接口")
 @RequestMapping("/api/auth")
 public class LoginController {
-    @Autowired
-    SystemUserService systemUserService;
-    @Autowired
+    @Resource
+    private SystemUserService systemUserService;
+    @Resource
     private WeChatService weChatService;
-    @Autowired
+    @Resource
     private EasyCaptchaService easyCaptchaService;
 
     @LoginLog

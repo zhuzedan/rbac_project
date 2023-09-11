@@ -59,6 +59,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     PasswordEncoder passwordEncoder;
     @Resource
     private JwtTokenUtil jwtTokenUtil;
+    @Resource
+    private CacheUtils<String, String> cacheUtils;
 
     private final Logger logger = LoggerFactory.getLogger(SystemUserServiceImpl.class);
 
@@ -106,8 +108,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     public SystemUser doCaptchaLogin(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request) {
         SystemUser systemUser;
         UserDetails userDetails;
-        String captcha = (String) request.getSession().getAttribute("captcha");
-        logger.info("调用验证码接口后存在session中的：" + captcha);
+        Object captcha = cacheUtils.get("captcha");
+        logger.info("调用验证码接口后存在缓存中的：" + captcha);
         logger.info("前端实际输入的：" + loginCaptchaDto.getCaptcha());
         if (null == captcha || !captcha.equals(loginCaptchaDto.getCaptcha())) {
             throw new ResponseException("验证码不正确");
