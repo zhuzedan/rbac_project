@@ -34,7 +34,7 @@ public class LoginController {
     @ApiOperation("用户登录")
     @PostMapping("/login")
     public ResponseResult<?> login(@RequestBody LoginDto loginDto) {
-        return systemUserService.login(loginDto);
+        return ResponseResult.success(systemUserService.login(loginDto));
     }
 
     @LoginLog

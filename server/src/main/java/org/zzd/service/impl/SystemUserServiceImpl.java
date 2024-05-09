@@ -65,12 +65,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     private final Logger logger = LoggerFactory.getLogger(SystemUserServiceImpl.class);
 
     @Override
-    public ResponseResult<?> login(LoginDto loginDto) throws ResponseException {
+    public LoginRespDto login(LoginDto loginDto) throws ResponseException {
         SystemUser login = doLogin(loginDto.getUsername(), loginDto.getPassword());
         SecuritySystemUser user = new SecuritySystemUser(login);
         String token = jwtTokenUtil.generateToken(user);
-        LoginRespDto loginRespDto = new LoginRespDto(SecurityConstants.TOKEN_PREFIX, token, jwtTokenUtil.getExpiredDateFromToken(token).getTime());
-        return ResponseResult.success("登录成功", loginRespDto);
+        return new LoginRespDto(SecurityConstants.TOKEN_PREFIX, token, jwtTokenUtil.getExpiredDateFromToken(token).getTime());
     }
 
     public SystemUser doLogin(String username, String password) {
@@ -82,7 +81,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             userDetails = loadUserByUsername(username);
             systemUser = ((SecuritySystemUser) userDetails).getSystemUser();
         } catch (Exception e) {
-            throw new ResponseException(ResultCodeEnum.LOGIN_ERROR);
+            throw new ResponseException(e.getMessage());
         }
         if (!passwordEncoder.matches(password, systemUser.getPassword())) {
             throw new ResponseException(ResultCodeEnum.PASSWORD_ERROR);

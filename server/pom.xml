@@ -31,6 +31,11 @@
             <artifactId>x-security</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.whvcse</groupId>
+            <artifactId>easy-captcha</artifactId>
+            <version>1.6.2</version>
+        </dependency>
         <!-- 接口参数校验注解依赖包 -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>

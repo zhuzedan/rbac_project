@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2023-03-02 13:53:39
  */
 public interface SystemUserService extends IService<SystemUser> {
-    ResponseResult<?> login(LoginDto loginDto);
+    LoginRespDto login(LoginDto loginDto);
 
     ResponseResult<?> loginCaptcha(LoginCaptchaDto loginCaptchaDto, HttpServletRequest request);
 
